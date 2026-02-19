@@ -1,0 +1,18 @@
+{
+  "name": "monolegal-challenge-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-frontend": "cd frontend && npm install",
+    "start-frontend": "cd frontend && npm start",
+    "build-frontend": "cd frontend && npm run build",
+    "start-backend": "cd backend/MonolegalChallenge.Api && dotnet run",
+    "seed-backend": "cd backend/MonolegalChallenge.Api && dotnet run --project MonolegalChallenge.Api.csproj --urls http://localhost:5045 -c Debug",
+    "dev": "concurrently \"npm: start-backend\" \"npm: start-frontend\"",
+    "start": "npm run start-frontend",
+    "postinstall": "npm run install-frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

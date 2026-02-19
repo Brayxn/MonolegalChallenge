@@ -1,0 +1,25 @@
+# Node
+node_modules/
+
+# Frontend build
+/frontend/build
+
+# .env files
+*.env
+*.env.local
+
+# .NET build outputs
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# npm logs
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

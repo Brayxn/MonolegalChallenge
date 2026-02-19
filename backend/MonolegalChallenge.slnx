@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="MonolegalChallenge.Api/MonolegalChallenge.Api.csproj" />
+  <Project Path="MonolegalChallenge.Application/MonolegalChallenge.Application.csproj" />
+  <Project Path="MonolegalChallenge.Domain/MonolegalChallenge.Domain.csproj" />
+  <Project Path="MonolegalChallenge.Infrastructure/MonolegalChallenge.Infrastructure.csproj" />
+  <Project Path="MonolegalChallenge.Tests/MonolegalChallenge.Tests.csproj" />
+</Solution>
