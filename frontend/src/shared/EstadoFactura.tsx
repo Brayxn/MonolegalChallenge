@@ -1,4 +1,3 @@
-// Componente reutilizable para mostrar el estado de una factura con color
 import React from 'react';
 import { Chip } from '@mui/material';
 

@@ -8,8 +8,8 @@ namespace MonolegalChallenge.Api.Controllers
     [Route("api/[controller]")]
     public class CorreosController : ControllerBase
     {
-        private readonly CorreoHistorialService _service;
-        public CorreosController(CorreoHistorialService service)
+        private readonly ICorreoHistorialService _service;
+        public CorreosController(ICorreoHistorialService service)
         {
             _service = service;
         }

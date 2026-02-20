@@ -9,12 +9,12 @@ namespace MonolegalChallenge.Application
 {
     public class FacturaBackgroundService : BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly TimeSpan _intervalo;
 
-        public FacturaBackgroundService(IServiceProvider serviceProvider, TimeSpan? intervalo = null)
+        public FacturaBackgroundService(IServiceScopeFactory scopeFactory, TimeSpan? intervalo = null)
         {
-            _serviceProvider = serviceProvider;
+            _scopeFactory = scopeFactory;
             _intervalo = intervalo ?? TimeSpan.FromMinutes(1); // Por defecto 1 minuto
         }
 
@@ -22,7 +22,7 @@ namespace MonolegalChallenge.Application
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using (var scope = _serviceProvider.CreateScope())
+                using (var scope = _scopeFactory.CreateScope())
                 {
                     var autoDesactivacionService = scope.ServiceProvider.GetRequiredService<FacturaAutoDesactivacionService>();
                     try

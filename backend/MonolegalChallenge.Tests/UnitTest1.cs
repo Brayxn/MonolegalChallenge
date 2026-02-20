@@ -30,21 +30,16 @@ public class FacturaServiceTests
         var clienteRepo = new Mock<IClienteRepository>();
         clienteRepo.Setup(r => r.GetByIdAsync(It.IsAny<string>())).ReturnsAsync((string id) => clientes.FirstOrDefault(c => c.Id == id));
 
-        var emailService = new Mock<IEmailService>();
-        emailService.Setup(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+        var recordatorioProcessor = new Mock<IRecordatorioProcessor>();
 
-        var service = new FacturaService(facturaRepo.Object, clienteRepo.Object, emailService.Object);
+        var service = new FacturaService(facturaRepo.Object, clienteRepo.Object, recordatorioProcessor.Object);
 
         // Act
         await service.ProcesarRecordatoriosAsync();
 
-        // Assert
-        facturaRepo.Verify(r => r.UpdateAsync(It.Is<Factura>(f => f.Id == "1" && f.Estado == "segundorecordatorio")), Times.Once);
-        facturaRepo.Verify(r => r.UpdateAsync(It.Is<Factura>(f => f.Id == "2" && f.Estado == "desactivado")), Times.Once);
-        emailService.Verify(e => e.SendEmailAsync("a@mail.com", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        emailService.Verify(e => e.SendEmailAsync("b@mail.com", It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        // No se debe actualizar ni enviar email para facturas en otro estado
-        facturaRepo.Verify(r => r.UpdateAsync(It.Is<Factura>(f => f.Id == "3")), Times.Never);
-        emailService.Verify(e => e.SendEmailAsync("c@mail.com", It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        // Assert: processor debe ser invocado solo para facturas en primer/segundo recordatorio
+        recordatorioProcessor.Verify(rp => rp.ProcesarRecordatorioIndividualAsync("1"), Times.Once);
+        recordatorioProcessor.Verify(rp => rp.ProcesarRecordatorioIndividualAsync("2"), Times.Once);
+        recordatorioProcessor.Verify(rp => rp.ProcesarRecordatorioIndividualAsync("3"), Times.Never);
     }
 }

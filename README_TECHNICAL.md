@@ -169,3 +169,36 @@ Mejoras y notas de despliegue
 - Añadir pruebas e2e (Playwright/Cypress) para cubrir flujos completos.
 
 Fin de la documentación técnica. Si quieres, puedo generar ejemplos concretos de GitHub Actions y show-cases para integrar con servicios de monitorización.
+
+- SOLID:
+  - `ICorreoHistorialService` y `ICorreoHistorialService` implementados; `CorreoHistorialService` depende ahora de la interfaz.
+  - `IEmailTemplateService` + `EmailTemplateService` como implementación inyectable 
+  - `IRecordatorioProcessor` extraído y `RecordatorioProcessor` creado; `FacturaService` delega la lógica de recordatorios en este processor (mejora SRP).
+  - `FacturaBackgroundService` actualizado para crear scopes con `IServiceScopeFactory` y resolver servicios con alcance dentro del bucle.
+
+## Cómo correr localmente 
+
+- Asegúrate de que MongoDB esté disponible en la conexión configurada (`appsettings.json` por defecto `mongodb://localhost:27017`).
+- Arrancar API (desde la raíz):
+
+```powershell
+dotnet run --project backend\MonolegalChallenge.Api\MonolegalChallenge.Api.csproj --urls "http://localhost:5045"
+```
+
+- Arrancar frontend:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+## Tests
+
+- Ejecutar unidad tests:
+
+```powershell
+dotnet test backend\MonolegalChallenge.Tests\MonolegalChallenge.Tests.csproj
+```
+
+

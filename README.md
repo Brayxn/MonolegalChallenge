@@ -15,14 +15,16 @@ Ver `PERMISSION.md` y `LICENSE` para detalles legales.
 - Frontend: React + TypeScript — `frontend/`
 - Base de datos: MongoDB
 
-## Cómo ejecutar (resumen)
+## Cómo ejecutar 
 Backend:
 
 ```powershell
-cd backend/MonolegalChallenge.Api
+# Desde la raíz del repositorio
+cd backend\MonolegalChallenge.Api
 dotnet restore
 dotnet build
-dotnet run
+# Ejecutar en el puerto que espera el frontend (por defecto 5045)
+dotnet run --urls "http://localhost:5045"
 ```
 
 Frontend:
@@ -30,8 +32,9 @@ Frontend:
 ```bash
 cd frontend
 npm install
+# Usa el puerto de la API si es necesario: export REACT_APP_API_URL=http://localhost:5045/api
 npm start
 ```
-
+Para más detalles, ver `README_TECHNICAL.md`.
 ## Licencia
 Uso restringido — ver `LICENSE` y `PERMISSION.md`.

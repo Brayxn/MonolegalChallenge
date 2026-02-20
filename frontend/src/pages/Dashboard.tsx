@@ -22,7 +22,6 @@ const Dashboard: React.FC = () => {
   const [processing, setProcessing] = useState(false);
   const [toast, setToast] = useState<{ open: boolean; text: string; type?: 'ok'|'error' }>({ open: false, text: '' });
 
-  // Ocultar toast automáticamente después de 3 segundos
   React.useEffect(() => {
     if (toast.open) {
       const timer = setTimeout(() => setToast(t => ({ ...t, open: false })), 3000);
@@ -39,17 +38,14 @@ const Dashboard: React.FC = () => {
   const { data: facturas } = require('../hooks/useFetch').useFetch(`${API_BASE_URL}/facturas`, refreshKey);
   const facturasArray = facturas || [];
 
-  // Refrescar correos al borrar sin recargar
   React.useEffect(() => {
     (window as any).onCorreoBorrado = () => setRefreshKey(k => k + 1);
     return () => { (window as any).onCorreoBorrado = undefined; };
   }, []);
 
-  // Obtener lista de clientes desde el backend
   const { data: clientesData } = useFetch(`${API_BASE_URL}/clientes`, refreshKey);
   const clientes = Array.isArray(clientesData) ? clientesData : [];
 
-  // Filtrar facturas y correos por cliente
   const facturasFiltradas = useMemo(() => cliente ? facturasArray.filter((f: any) => f.clienteId === cliente) : facturasArray, [facturasArray, cliente]);
   const correosFiltrados = useMemo(() => cliente ? (correos || []).filter((c: any) => c.destinatario && c.destinatario.includes(cliente)) : (correos || []), [correos, cliente]);
 

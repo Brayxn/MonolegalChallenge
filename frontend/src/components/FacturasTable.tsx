@@ -24,7 +24,6 @@ interface FacturasTableProps {
 }
 
 const FacturasTable: React.FC<FacturasTableProps> = ({ facturas, onProcesar, processingId }) => {
-  // Dynamic "Límite" countdown
   const [limites, setLimites] = useState<{[id:string]:string}>({});
 
   useEffect(() => {
@@ -32,7 +31,6 @@ const FacturasTable: React.FC<FacturasTableProps> = ({ facturas, onProcesar, pro
       const now = Date.now();
       const newLimites: {[id:string]:string} = {};
       facturas.forEach(f => {
-        // Solo para segundo recordatorio y si hay fechaLimiteDesactivacion
         if (
           (f.estado === 'Segundo recordatorio' || f.estado === 'segundo recordatorio' || f.estado === 'segundorecordatorio') &&
           f.fechaLimiteDesactivacion
@@ -90,7 +88,6 @@ const FacturasTable: React.FC<FacturasTableProps> = ({ facturas, onProcesar, pro
               bCls = 'badge-first';
               estadoLabel = f.estado;
             }
-            // Formatear fecha de emisión
             let fechaEmision = f.emision;
             if (f.emision && !isNaN(Date.parse(f.emision))) {
               const d = new Date(f.emision);

@@ -1,13 +1,13 @@
 namespace MonolegalChallenge.Application
 {
-    public static class EmailTemplateService
+    public class EmailTemplateService : IEmailTemplateService
     {
-        public static string BuildBodyPrimerRecordatorio(string nombre, string facturaId, decimal monto)
+        public string BuildBodyPrimerRecordatorio(string nombre, string facturaId, decimal monto)
         {
             return $"Estimado/a {nombre},\n\nEste es el primer recordatorio de pago para su factura {facturaId}.\nMonto pendiente: {monto:C}\n\nPor favor realice el pago a la brevedad o contáctenos si ya lo hizo.\n\nAtentamente,\nEquipo de Cobranzas";
         }
 
-        public static string BuildBodySegundoRecordatorio(string nombre, string facturaId, decimal monto, TimeSpan tiempoEspera, string fechaLimiteDesactivacion = null)
+        public string BuildBodySegundoRecordatorio(string nombre, string facturaId, decimal monto, TimeSpan tiempoEspera, string? fechaLimiteDesactivacion = null)
         {
             string tiempoTexto;
             if (tiempoEspera.TotalMinutes < 60)
@@ -29,7 +29,7 @@ namespace MonolegalChallenge.Application
             return $"Estimado/a {nombre},\n\nEste es el segundo recordatorio de pago para su factura {facturaId}. Si no realiza el pago de su monto en {tiempoTexto}, se le desactivará su cuenta.{fechaTexto}\nMonto pendiente: {monto:C}\n\nPor favor realice el pago a la brevedad o contáctenos si ya lo hizo.\n\nAtentamente,\nEquipo de Cobranzas";
         }
 
-        public static string BuildBodyDesactivado(string nombre, string facturaId, decimal monto)
+        public string BuildBodyDesactivado(string nombre, string facturaId, decimal monto)
         {
             return $"Estimado/a {nombre},\n\nSu factura {facturaId} ha sido desactivada por falta de pago.\nMonto pendiente: {monto:C}\n\nSi ya realizó el pago, por favor contáctenos.\n\nAtentamente,\nEquipo de Cobranzas";
         }

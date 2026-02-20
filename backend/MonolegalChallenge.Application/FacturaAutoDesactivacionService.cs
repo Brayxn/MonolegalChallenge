@@ -8,18 +8,21 @@ public class FacturaAutoDesactivacionService
     private readonly IFacturaRepository _facturaRepository;
     private readonly IClienteRepository _clienteRepository;
     private readonly IEmailService _emailService;
-    private readonly CorreoHistorialService _correoHistorialService;
+    private readonly ICorreoHistorialService _correoHistorialService;
+    private readonly IEmailTemplateService _emailTemplateService;
 
     public FacturaAutoDesactivacionService(
         IFacturaRepository facturaRepository,
         IClienteRepository clienteRepository,
         IEmailService emailService,
-        CorreoHistorialService correoHistorialService)
+        ICorreoHistorialService correoHistorialService,
+        IEmailTemplateService emailTemplateService)
     {
         _facturaRepository = facturaRepository;
         _clienteRepository = clienteRepository;
         _emailService = emailService;
         _correoHistorialService = correoHistorialService;
+        _emailTemplateService = emailTemplateService;
     }
 
     public async Task ProcesarDesactivacionesAsync()
@@ -34,7 +37,7 @@ public class FacturaAutoDesactivacionService
             {
                 var cliente = await _clienteRepository.GetByIdAsync(factura.ClienteId);
                 if (cliente == null) continue;
-                var body = EmailTemplateService.BuildBodyDesactivado(cliente.Nombre, factura.Id, factura.Monto);
+                var body = _emailTemplateService.BuildBodyDesactivado(cliente.Nombre, factura.Id, factura.Monto);
                 await _emailService.SendEmailAsync(cliente.Email, "Factura desactivada", body);
                 await _correoHistorialService.RegistrarEnvioAsync(cliente.Email, "Factura desactivada", factura.Id, body);
                 factura.Estado = "desactivado";

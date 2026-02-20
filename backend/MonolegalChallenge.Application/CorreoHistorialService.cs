@@ -2,7 +2,7 @@ using MonolegalChallenge.Domain;
 
 namespace MonolegalChallenge.Application
 {
-    public class CorreoHistorialService
+    public class CorreoHistorialService : ICorreoHistorialService
     {
         private readonly ICorreoHistorialRepository _repo;
         public CorreoHistorialService(ICorreoHistorialRepository repo)

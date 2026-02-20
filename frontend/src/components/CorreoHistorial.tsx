@@ -15,7 +15,6 @@ const CorreoHistorial: React.FC<{ correos: any[] }> = ({ correos }) => {
   const [filtro, setFiltro] = useState({ destinatario: '', asunto: '', factura: '', dia: new Date() });
   const [borrando, setBorrando] = useState<string | null>(null);
   
-  // Estado del modal unificado
   const [modal, setModal] = useState<{ open: boolean; title: string; desc: string; onConfirm?: () => void } | null>(null);
 
   const correosFiltrados = useMemo(() => {
@@ -54,7 +53,7 @@ const CorreoHistorial: React.FC<{ correos: any[] }> = ({ correos }) => {
       desc: `¿Confirmas el borrado del correo? Esta acción no se puede deshacer.`,
       onConfirm: async () => {
         setBorrando(id);
-        cerrarModal(); // Cerramos al confirmar
+        cerrarModal();
         try {
           await axios.delete(`${API_BASE_URL}/correos/${id}`);
           if (typeof (window as any).onCorreoBorrado === 'function') {
@@ -75,13 +74,13 @@ const CorreoHistorial: React.FC<{ correos: any[] }> = ({ correos }) => {
         Registro de envíos
       </Typography>
 
-      {/* --- MODAL (Fuera del loop para que funcione correctamente) --- */}
+      {}
       {modal?.open && (
         <Modal
           open={modal.open}
           title={modal.title}
           description={modal.desc}
-          onCancel={cerrarModal} // El botón cancelar ahora limpia el estado y quita la alerta
+          onCancel={cerrarModal} 
           onConfirm={modal.onConfirm!}
         />
       )}

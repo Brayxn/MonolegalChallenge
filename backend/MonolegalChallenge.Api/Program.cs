@@ -28,31 +28,41 @@ builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IFacturaRepository, FacturaRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICorreoHistorialRepository, CorreoHistorialRepository>();
-builder.Services.AddScoped<CorreoHistorialService>();
+builder.Services.AddScoped<ICorreoHistorialService, CorreoHistorialService>();
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<FacturaAutoDesactivacionService>(sp =>
     new FacturaAutoDesactivacionService(
         sp.GetRequiredService<IFacturaRepository>(),
         sp.GetRequiredService<IClienteRepository>(),
         sp.GetRequiredService<IEmailService>(),
-        sp.GetRequiredService<CorreoHistorialService>()
+        sp.GetRequiredService<ICorreoHistorialService>(),
+        sp.GetRequiredService<IEmailTemplateService>()
     )
 );
 // Configuración de tiempo de espera para desactivación
 var tiempoEsperaDesactivacionMin = builder.Configuration.GetValue<int?>("TiempoEsperaDesactivacionMin") ?? 2880; // 2880 min = 48h por defecto
+builder.Services.AddScoped<IRecordatorioProcessor>(sp =>
+    new RecordatorioProcessor(
+        sp.GetRequiredService<IFacturaRepository>(),
+        sp.GetRequiredService<IClienteRepository>(),
+        sp.GetRequiredService<IEmailService>(),
+        sp.GetRequiredService<ICorreoHistorialService>(),
+        sp.GetRequiredService<IEmailTemplateService>(),
+        TimeSpan.FromMinutes(tiempoEsperaDesactivacionMin)
+    )
+);
 builder.Services.AddScoped<FacturaService>(sp =>
     new FacturaService(
         sp.GetRequiredService<IFacturaRepository>(),
         sp.GetRequiredService<IClienteRepository>(),
-        sp.GetRequiredService<IEmailService>(),
-        sp.GetRequiredService<CorreoHistorialService>(),
-        TimeSpan.FromMinutes(tiempoEsperaDesactivacionMin)
+        sp.GetRequiredService<IRecordatorioProcessor>()
     )
 );
 
 // Configuración de intervalo de automatización
 var intervaloAutomatizacionMin = builder.Configuration.GetValue<int?>("IntervaloAutomatizacionMin") ?? 1;
 builder.Services.AddHostedService(sp =>
-    new FacturaBackgroundService(sp, TimeSpan.FromMinutes(intervaloAutomatizacionMin))
+    new FacturaBackgroundService(sp.GetRequiredService<IServiceScopeFactory>(), TimeSpan.FromMinutes(intervaloAutomatizacionMin))
 );
 builder.Services.AddScoped<ClienteService>();
 
