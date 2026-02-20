@@ -1,3 +1,5 @@
+.badge-green    { background:var(--green-bg); color:var(--green); border-color:#bbf7d0; }
+.badge-red      { background:var(--danger-bg); color:var(--danger); border-color:#fecaca; }
 /* Spinner animation for loading states */
 .spinner {
   display: inline-block;

@@ -33,5 +33,10 @@ namespace MonolegalChallenge.Application
         {
             return $"Estimado/a {nombre},\n\nSu factura {facturaId} ha sido desactivada por falta de pago.\nMonto pendiente: {monto:C}\n\nSi ya realizó el pago, por favor contáctenos.\n\nAtentamente,\nEquipo de Cobranzas";
         }
+
+        public string BuildBodyPagoRecibido(string nombre, string facturaId, decimal monto)
+        {
+            return $"Estimado/a {nombre},\n\nHemos recibido con éxito el pago correspondiente a la factura {facturaId}.\nMonto pagado: {monto:C}\n\nGracias por su pago. Si necesita una confirmación adicional o recibo, contáctenos.\n\nAtentamente,\nEquipo de Cobranzas";
+        }
     }
 }

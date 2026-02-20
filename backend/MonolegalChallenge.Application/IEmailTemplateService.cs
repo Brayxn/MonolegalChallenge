@@ -5,5 +5,6 @@ namespace MonolegalChallenge.Application
         string BuildBodyPrimerRecordatorio(string nombre, string facturaId, decimal monto);
         string BuildBodySegundoRecordatorio(string nombre, string facturaId, decimal monto, TimeSpan tiempoEspera, string? fechaLimiteDesactivacion = null);
         string BuildBodyDesactivado(string nombre, string facturaId, decimal monto);
+        string BuildBodyPagoRecibido(string nombre, string facturaId, decimal monto);
     }
 }

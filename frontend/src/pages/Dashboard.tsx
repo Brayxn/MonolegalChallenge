@@ -18,6 +18,11 @@ import { useCorreoHistorial } from '../hooks/useCorreoHistorial';
 
 
 const Dashboard: React.FC = () => {
+    // Auto-refresh polling every 5 seconds
+    React.useEffect(() => {
+      const interval = setInterval(() => setRefreshKey(k => k + 1), 5000);
+      return () => clearInterval(interval);
+    }, []);
   const [refreshKey, setRefreshKey] = useState(0);
   const [processing, setProcessing] = useState(false);
   const [toast, setToast] = useState<{ open: boolean; text: string; type?: 'ok'|'error' }>({ open: false, text: '' });
@@ -66,6 +71,25 @@ const Dashboard: React.FC = () => {
           setToast({ open: true, text: 'Error al procesar', type: 'error' });
         } finally {
           setProcessingId(null);
+          setModal(m => ({ ...m, open: false }));
+        }
+      }
+    });
+  };
+
+  const handlePonerAlDia = (id: string) => {
+    setModal({
+      open: true,
+      title: `Marcar Factura #${id} como al día`,
+      desc: `¿Estás seguro que quieres poner que esta factura está al día?`,
+      onConfirm: async () => {
+        try {
+          await axios.post(`${API_BASE_URL}/facturas/${id}/poner-al-dia`);
+          setToast({ open: true, text: `Factura #${id} puesta al día`, type: 'ok' });
+          handleRefresh();
+        } catch {
+          setToast({ open: true, text: 'Error al poner al día', type: 'error' });
+        } finally {
           setModal(m => ({ ...m, open: false }));
         }
       }
@@ -135,7 +159,7 @@ const Dashboard: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                  <FacturasTable facturas={facturasFiltradas} onProcesar={handleProcesar} processingId={processingId} />
+                  <FacturasTable facturas={facturasFiltradas} onProcesar={handleProcesar} processingId={processingId} onPonerAlDia={handlePonerAlDia} />
                 </div>
               )
             },

@@ -23,6 +23,18 @@ const FacturasResumen: React.FC<any> = ({ facturas = [], onForceRefresh }) => {
     } finally { setProcessingId(null); }
   };
 
+  const handlePonerAlDia = async (id: string) => {
+    if (!window.confirm(`¿Estás seguro que quieres poner que esta factura está al día?`)) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/facturas/${id}/poner-al-dia`, { method: 'POST' });
+      if (!res.ok) throw new Error();
+      setSnackbar({ open: true, message: 'Factura puesta al día', severity: 'success' });
+      onForceRefresh?.();
+    } catch {
+      setSnackbar({ open: true, message: 'Error al poner al día', severity: 'error' });
+    }
+  };
+
   return (
     <Box sx={{ width: '100%', overflowX: 'auto', bgcolor: '#fff', borderRadius: '12px', border: '1px solid #e5e2dc', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
       <TableContainer sx={{ maxHeight: 600, borderRadius: '12px' }}>
@@ -42,7 +54,7 @@ const FacturasResumen: React.FC<any> = ({ facturas = [], onForceRefresh }) => {
             {facturas.length === 0 ? (
               <TableRow><TableCell colSpan={7} align="center" sx={{ py: 10 }}>No hay facturas para mostrar</TableCell></TableRow>
             ) : facturas.map((f: any) => (
-              <FacturaRow key={f.id} factura={f} onProcesar={handleProcesar} processing={processingId === f.id} />
+              <FacturaRow key={f.id} factura={f} onProcesar={handleProcesar} processing={processingId === f.id} onPonerAlDia={handlePonerAlDia} />
             ))}
           </TableBody>
         </Table>

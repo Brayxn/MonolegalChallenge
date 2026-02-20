@@ -21,11 +21,25 @@ public class Factura
     public string ClienteId { get; set; } = string.Empty;
     public decimal Monto { get; set; }
     public DateTime FechaEmision { get; set; }
-    public string Estado { get; set; } = string.Empty; // "primerrecordatorio", "segundorecordatorio", "desactivado"
+    public string Estado { get; set; } = string.Empty; // "primerrecordatorio", "segundorecordatorio", "desactivado", "activo"
     /// <summary>
     /// Fecha límite para desactivar la factura tras el segundo recordatorio.
     /// </summary>
     public DateTime? FechaLimiteDesactivacion { get; set; }
+    /// <summary>
+    /// Fecha en que se envió el primer recordatorio (UTC).
+    /// </summary>
+    public DateTime? FechaEnvioPrimerRecordatorio { get; set; }
+
+    /// <summary>
+    /// Fecha en que se envió el segundo recordatorio (UTC).
+    /// </summary>
+    public DateTime? FechaEnvioSegundoRecordatorio { get; set; }
+
+    /// <summary>
+    /// Fecha en que la factura fue marcada como pagada (UTC).
+    /// </summary>
+    public DateTime? FechaPago { get; set; }
 }
 
 /// <summary>

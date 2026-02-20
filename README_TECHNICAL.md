@@ -98,6 +98,15 @@ Ejemplo: procesar una factura (curl):
 ```bash
 curl -X POST http://localhost:5045/api/facturas/procesar-recordatorio/F1
 ```
+## Configuración avanzada: tiempos de automatización (appsettings.json)
+
+En el archivo `appsettings.json` puedes ajustar los siguientes parámetros para controlar la automatización de recordatorios y desactivación:
+
+- **TiempoEsperaDesactivacionMin**: Define cuántos minutos espera el sistema después de enviar el segundo recordatorio antes de desactivar la factura automáticamente. Ejemplo: `TiempoEsperaDesactivacionMin: 60` (una hora).
+- **IntervaloAutomatizacionMin**: Intervalo en minutos con el que el servicio background revisa y procesa facturas para automatización. Ejemplo: `IntervaloAutomatizacionMin: 5` (cada cinco minutos).
+- **TiempoSegundoRecordatorioMin**: Minutos que deben pasar tras el primer recordatorio para que se envíe el segundo. Ejemplo: `TiempoSegundoRecordatorioMin: 40` (cuarenta minutos).
+
+> Todos estos valores deben configurarse en minutos (números enteros). Puedes editarlos directamente en `appsettings.json` o mediante variables de entorno según el entorno de despliegue.
 
 Esquema de la base de datos (colecciones y documentos)
 ------------------------------------------------------
@@ -108,8 +117,16 @@ Colecciones principales:
   - `clienteId` (string): id del cliente.
   - `monto` (decimal/number): monto de la factura.
   - `fechaEmision` (Date): fecha de emisión.
-  - `estado` (string): `primerrecordatorio` | `segundorecordatorio` | `desactivado`.
-  - `fechaLimiteDesactivacion` (Date|null): calculada según `TiempoEsperaDesactivacionMin`.
+  - `estado` (string): `primerrecordatorio` | `segundorecordatorio` | `desactivado` | `activo`.
+  - `fechaLimiteDesactivacion` (Date|null): fecha límite para desactivar la factura, calculada como:
+      - `fechaLimiteDesactivacion = FechaEnvioSegundoRecordatorio + TiempoEsperaDesactivacionMin (minutos)`
+      - Solo se asigna cuando se envía el segundo recordatorio.
+  - `FechaEnvioPrimerRecordatorio` (Date|null): fecha en que se envió el primer recordatorio, asignada cuando se procesa el primer recordatorio.
+      - Se asigna en el backend al ejecutar la acción de procesar primer recordatorio.
+  - `FechaEnvioSegundoRecordatorio` (Date|null): fecha en que se envió el segundo recordatorio, asignada cuando se procesa el segundo recordatorio.
+      - Se calcula y asigna automáticamente cuando han pasado `TiempoSegundoRecordatorioMin` minutos desde `FechaEnvioPrimerRecordatorio`.
+  - `FechaPago` (Date|null): fecha en que la factura fue marcada como pagada (estado `activo`).
+      - Se asigna cuando el usuario marca la factura como pagada desde la interfaz o backend.
 
 - `clientes`:
   - `_id` (string)

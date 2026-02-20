@@ -1,15 +1,17 @@
 import React from 'react';
 import { TableRow, TableCell, Button, Typography, CircularProgress } from '@mui/material';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { EstadoFactura } from '../../shared/EstadoFactura';
 
 interface FacturaRowProps {
   factura: any;
   onProcesar: (id: string) => void;
   processing: boolean;
+  onPonerAlDia?: (id: string) => void;
 }
 
-const FacturaRow: React.FC<FacturaRowProps> = ({ factura, onProcesar, processing }) => (
+const FacturaRow: React.FC<FacturaRowProps> = ({ factura, onProcesar, processing, onPonerAlDia }) => (
   <TableRow sx={{ '&:hover': { bgcolor: '#fcfbf9' }, transition: 'background 0.2s' }}>
     <TableCell>
       <Typography variant="body2" sx={{ fontFamily: 'DM Mono', fontWeight: 500, color: '#c8a84b' }}>
@@ -43,6 +45,7 @@ const FacturaRow: React.FC<FacturaRowProps> = ({ factura, onProcesar, processing
       </Typography>
     </TableCell>
     <TableCell align="right">
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
       <Button
         variant="contained"
         size="small"
@@ -62,6 +65,17 @@ const FacturaRow: React.FC<FacturaRowProps> = ({ factura, onProcesar, processing
       >
         {processing ? 'Enviando' : 'Procesar'}
       </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => onPonerAlDia && onPonerAlDia(factura.id)}
+        disabled={!onPonerAlDia || Boolean((factura.estado ?? '').toString().toLowerCase().includes('activo') || (factura.estado ?? '').toString().toLowerCase().includes('desactivado'))}
+        startIcon={<CheckCircleOutlineIcon />}
+        sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 600, px: 2 }}
+      >
+        activar
+      </Button>
+      </div>
     </TableCell>
   </TableRow>
 );

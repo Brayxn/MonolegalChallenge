@@ -36,16 +36,19 @@ public class RecordatorioProcessor : IRecordatorioProcessor
 
         if (factura.Estado == "primerrecordatorio")
         {
+            var ahora = DateTime.UtcNow;
             var body = _emailTemplateService.BuildBodyPrimerRecordatorio(cliente.Nombre, factura.Id, factura.Monto);
             await _emailService.SendEmailAsync(cliente.Email, "Primer recordatorio de pago", body);
             await _correoHistorialService.RegistrarEnvioAsync(cliente.Email, "Primer recordatorio de pago", factura.Id, body);
             factura.Estado = "segundorecordatorio";
             factura.FechaLimiteDesactivacion = null;
+            factura.FechaEnvioPrimerRecordatorio = ahora;
             await _facturaRepository.UpdateAsync(factura);
         }
         else if (factura.Estado == "segundorecordatorio")
         {
-            if (factura.FechaLimiteDesactivacion == null)
+            // Envío del segundo recordatorio: se hace sólo si no se ha enviado ya (FechaEnvioSegundoRecordatorio == null)
+            if (factura.FechaEnvioSegundoRecordatorio == null)
             {
                 var ahora = DateTime.UtcNow;
                 var fechaLimite = ahora.Add(_tiempoEsperaDesactivacion);
@@ -57,6 +60,7 @@ public class RecordatorioProcessor : IRecordatorioProcessor
                     fechaLimite.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt"));
                 await _emailService.SendEmailAsync(cliente.Email, "Segundo recordatorio de pago", body);
                 await _correoHistorialService.RegistrarEnvioAsync(cliente.Email, "Segundo recordatorio de pago", factura.Id, body);
+                factura.FechaEnvioSegundoRecordatorio = ahora;
                 factura.FechaLimiteDesactivacion = fechaLimite;
                 await _facturaRepository.UpdateAsync(factura);
             }

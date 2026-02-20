@@ -20,12 +20,15 @@ db.clientes.insertOne({
 // --- Colección: facturas ---
 db.createCollection('facturas')
 db.facturas.insertOne({
-  _id: "F1",
-  ClienteId: "1",
-  Monto: NumberDecimal("5000"),
-  FechaEmision: ISODate("2026-02-19T02:36:50.994Z"),
+  _id: "F3",
+  ClienteId: "3",
+  Monto: { $numberDecimal: "5000" },
+  FechaEmision: { $date: "2026-02-19T02:36:50.994Z" },
   Estado: "primerrecordatorio",
-  FechaLimiteDesactivacion: null
+  FechaLimiteDesactivacion: null,
+  FechaEnvioPrimerRecordatorio: null,
+  FechaEnvioSegundoRecordatorio: null,
+  FechaPago: null
 })
 
 // --- Colección: correo_historial ---

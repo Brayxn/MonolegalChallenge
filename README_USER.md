@@ -1,73 +1,42 @@
 # Guía del Usuario — MonolegalChallenge
 
-Este documento explica, desde la perspectiva de un usuario final, cómo usar la aplicación para gestionar facturas y enviar recordatorios. Incluye guía de la interfaz, descripción de botones y flujos comunes.
+MonolegalChallenge es una aplicación web para gestionar facturas y enviar recordatorios de pago por correo electrónico.
 
-Contenido
-- Introducción breve
-- Requisitos y arranque local
-- Vista principal y secciones
-- Explicación de botones y acciones
-- Flujo: procesar recordatorio y ver historial
-- Mensajes, errores comunes y soluciones
+## ¿Cómo funciona?
 
-Introducción breve
-------------------
-MonolegalChallenge permite gestionar facturas, enviar recordatorios por correo y llevar un historial de comunicaciones. La aplicación está diseñada para ser simple: desde un panel puedes ver métricas, procesar recordatorios (individual o masivo) y revisar o borrar el historial de correos enviados.
+Desde el panel principal puedes:
+- Ver el resumen de facturas (total, pendientes, desactivadas, monto, clientes).
+- Filtrar facturas por cliente.
+- Procesar recordatorios de pago (individual o masivo).
+- Marcar facturas como pagadas (activar).
+- Ver el historial de correos enviados.
 
-Requisitos y arranque local
----------------------------
-Estos pasos los realiza un desarrollador o administrador que tenga el código:
+### Acciones principales
+- **Procesar**: envía un recordatorio de pago al cliente de la factura seleccionada y avanza el estado de la factura.
+- **Procesar Masivo**: envía recordatorios a todas las facturas pendientes.
+- **Activar**: marca una factura como pagada y la pasa al estado "activo" (útil si el cliente pagó fuera del sistema).
+- **Refrescar**: actualiza la información en pantalla.
 
-- Arrancar backend (.NET):
-```powershell
-cd backend/MonolegalChallenge.Api
-dotnet run
-```
-- Arrancar frontend (React):
-```bash
-cd frontend
-npm install
-npm start
-```
+### Estados de la factura
+Cada factura puede estar en uno de los siguientes estados:
+- **activo**: la factura está pagada y no requiere acción.
+- **primerrecordatorio**: se envió el primer recordatorio de pago.
+- **segundorecordatorio**: se envió el segundo recordatorio de pago.
+- **desactivado**: la factura fue desactivada automáticamente por falta de pago tras los recordatorios.
 
-Si la aplicación está desplegada, simplemente abre la URL que te proporcionen.
+### Cuenta regresiva y automatización
+Cuando una factura está en "primerrecordatorio" o "segundorecordatorio", verás una cuenta regresiva junto a ella:
+- Tras el primer recordatorio, la cuenta regresiva indica cuándo se enviará automáticamente el segundo recordatorio.
+- Tras el segundo recordatorio, la cuenta regresiva indica cuándo la factura será desactivada automáticamente si no se paga.
+No necesitas hacer nada: el sistema envía los recordatorios y desactiva la factura automáticamente cuando corresponde.
 
-Vista principal y secciones
---------------------------
-La pantalla principal (Dashboard) contiene:
+### Confirmaciones y mensajes
+Antes de realizar acciones importantes, la app te pedirá confirmación. Recibirás mensajes de éxito o error según el resultado.
 
-- Resumen General: tarjetas con métricas (total facturas, monto total, pendientes, desactivados, número de clientes).
-- Pestañas: "Facturas" y "Correos Enviados".
-  - Facturas: tabla con facturas y filtros por cliente.
-  - Correos Enviados: listado cronológico del historial.
-- Barra superior (Topbar): navegación y estado de backend (indica si el API responde).
+## ¿Qué necesitas saber?
+No es necesario tener conocimientos técnicos. Si la aplicación está desplegada, solo accede a la URL que te proporcionen y usa el panel para gestionar tus facturas y recordatorios.
 
-Explicación de botones y acciones
---------------------------------
-
-- Refrescar: fuerza la recarga de datos desde el backend.
-- Selector de cliente: filtra listas por cliente.
-- Procesar (por fila): abre un modal de confirmación para procesar el recordatorio de esa factura.
-- Procesar Masivo: abre un modal y, al confirmar, procesa todas las facturas pendientes.
-- Eliminar (papelera) en historial: borra la entrada del `correo_historial` en la base de datos (no reenvía ni borra correos del proveedor SMTP).
-
-Modal de confirmación
----------------------
-Antes de ejecutar acciones que alteran datos (procesar/desactivar/eliminar) aparece un modal con botones **Cancelar** y **Confirmar**. Usa Cancelar para abortar; Confirmar para proceder. También verás toasts informando éxito o error.
-
-Flujo: procesar recordatorio y ver historial
--------------------------------------------
-1. Al procesar una factura, el backend genera el contenido del correo (plantilla) y lo envía por SMTP.
-2. Si el envío es exitoso, se crea un registro en `correo_historial` con destinatario, asunto, cuerpo y fecha.
-3. Puedes ver el registro en la pestaña "Correos Enviados" y eliminar entradas si lo deseas.
-
-Mensajes, errores comunes y soluciones
-------------------------------------
-- "Backend Desactivado": comprueba que el backend esté en ejecución con `dotnet run`.
-- No llegan correos: pide al administrador que verifique las credenciales SMTP y que el backend tenga acceso de salida a Internet. En desarrollo puedes usar herramientas como `smtp4dev` o Mailtrap.
-
-Soporte y contacto
--------------------
-Si tienes problemas de uso o encuentras errores, captura el mensaje que aparece (toast o consola del navegador) y pásalo al equipo de soporte/desarrollo.
+Si tienes dudas o problemas, consulta con el administrador o soporte. Si ves mensajes de error en la pantalla, compártelos con el equipo de soporte para que puedan ayudarte.
 
 Fin de la guía de usuario.
+
