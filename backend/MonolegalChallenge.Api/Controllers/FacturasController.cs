@@ -9,12 +9,14 @@ namespace MonolegalChallenge.Api.Controllers
     [Route("api/[controller]")]
     public class FacturasController : ControllerBase
     {
-        private readonly FacturaService _facturaService;
+            private readonly FacturaService _facturaService;
+            private readonly int _tiempoSegundoRecordatorioMin;
 
-        public FacturasController(FacturaService facturaService)
-        {
-            _facturaService = facturaService;
-        }
+            public FacturasController(FacturaService facturaService, IConfiguration config)
+            {
+                _facturaService = facturaService;
+                _tiempoSegundoRecordatorioMin = config.GetValue<int?>("TiempoSegundoRecordatorioMin") ?? 40;
+            }
 
         [HttpPost("procesar-recordatorio/{id}")]
         public async Task<IActionResult> ProcesarRecordatorioIndividual(string id)
@@ -40,6 +42,13 @@ namespace MonolegalChallenge.Api.Controllers
         var clientes = await _facturaService.ObtenerTodosClientesAsync();
         var result = facturas.Select(f => {
             var cliente = clientes.FirstOrDefault(c => c.Id == f.ClienteId);
+            DateTime? fechaProgramadaSegundo = null;
+            if (f.FechaEnvioPrimerRecordatorio != null && f.FechaEnvioSegundoRecordatorio == null)
+            {
+                fechaProgramadaSegundo = f.FechaEnvioPrimerRecordatorio.Value
+                   .AddMinutes(_tiempoSegundoRecordatorioMin)
+                   .ToUniversalTime();
+            }
             return new {
                 id = f.Id,
                 clienteId = f.ClienteId,
@@ -48,6 +57,8 @@ namespace MonolegalChallenge.Api.Controllers
                 emision = f.FechaEmision.ToString("yyyy-MM-dd"),
                 estado = f.Estado,
                 fechaLimiteDesactivacion = f.FechaLimiteDesactivacion,
+                fechaProgramadaSegundo = fechaProgramadaSegundo?.ToString("o"),
+                fechaPago = f.FechaPago,
                 descripcion = "",
                 limite = f.FechaLimiteDesactivacion,
             };
@@ -67,6 +78,13 @@ namespace MonolegalChallenge.Api.Controllers
     {
         await _facturaService.ProcesarRecordatoriosAsync();
         return Ok(new { message = "Recordatorios procesados" });
+    }
+
+    [HttpPost("{id}/poner-al-dia")]
+    public async Task<IActionResult> PonerAlDia(string id)
+    {
+        await _facturaService.MarcarFacturaActivaAsync(id);
+        return Ok(new { message = $"Factura {id} marcada como al día" });
     }
 
 

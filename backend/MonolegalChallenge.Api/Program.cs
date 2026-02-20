@@ -55,14 +55,22 @@ builder.Services.AddScoped<FacturaService>(sp =>
     new FacturaService(
         sp.GetRequiredService<IFacturaRepository>(),
         sp.GetRequiredService<IClienteRepository>(),
-        sp.GetRequiredService<IRecordatorioProcessor>()
+        sp.GetRequiredService<IRecordatorioProcessor>(),
+        sp.GetRequiredService<IEmailService>(),
+        sp.GetRequiredService<ICorreoHistorialService>(),
+        sp.GetRequiredService<IEmailTemplateService>()
     )
 );
 
 // Configuración de intervalo de automatización
 var intervaloAutomatizacionMin = builder.Configuration.GetValue<int?>("IntervaloAutomatizacionMin") ?? 1;
+var tiempoSegundoRecordatorioMin = builder.Configuration.GetValue<int?>("TiempoSegundoRecordatorioMin") ?? 40; // 40 min por defecto
 builder.Services.AddHostedService(sp =>
-    new FacturaBackgroundService(sp.GetRequiredService<IServiceScopeFactory>(), TimeSpan.FromMinutes(intervaloAutomatizacionMin))
+    new FacturaBackgroundService(
+        sp.GetRequiredService<IServiceScopeFactory>(),
+        TimeSpan.FromMinutes(intervaloAutomatizacionMin),
+        TimeSpan.FromMinutes(tiempoSegundoRecordatorioMin)
+    )
 );
 builder.Services.AddScoped<ClienteService>();
 
